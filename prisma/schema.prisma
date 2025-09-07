@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model TrackedLink {
+  id         String   @id @default(uuid())
+  url        String
+  trackingId String   @unique
+  title      String?
+  createdAt  DateTime @default(now())
+  locations  LocationData[]
+
+  @@map("tracked_links")
+}
+
+model LocationData {
+  id           String      @id @default(uuid())
+  trackingId   String
+  latitude     Float
+  longitude    Float
+  timestamp    DateTime    @default(now())
+  userAgent    String?
+  ipAddress    String?
+  city         String?
+  country      String?
+  trackedLink  TrackedLink @relation(fields: [trackingId], references: [trackingId], onDelete: Cascade)
+
+  @@map("location_data")
+}
